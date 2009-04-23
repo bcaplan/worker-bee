@@ -1,0 +1,7 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/worker_bee
+lib/worker_bee.rb
+test/test_worker_bee.rb
