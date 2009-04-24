@@ -5,16 +5,16 @@ class WorkerBee
     
   end
   
-  def self.recipe
-    
+  def self.recipe &block
+    yield
   end
   
   def self.run
     
   end
   
-  def task
-    
+  def task *tasks, &block
+    yield
   end
   
 end

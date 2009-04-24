@@ -3,7 +3,7 @@ require "worker_bee"
 
 class TestWorkerBee < Test::Unit::TestCase
   def setup
-     wb = WorkerBee.new
+     @wb = WorkerBee.new
   end
   
   def test_recipe_takes_a_block
@@ -17,7 +17,7 @@ class TestWorkerBee < Test::Unit::TestCase
   
   def test_task_takes_a_block    
     expected = 'hello'
-    actual = wb.task do
+    actual = @wb.task do
       'hello'
     end
     
@@ -26,7 +26,7 @@ class TestWorkerBee < Test::Unit::TestCase
   
   def test_task_takes_many_arguments
     assert_nothing_raised(ArgumentError) do
-      WorkerBee.new.task :one, :two, :three, :four do
+      @wb.task :one, :two, :three, :four do
         'hello'
       end
     end
