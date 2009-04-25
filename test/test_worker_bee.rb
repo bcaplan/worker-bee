@@ -32,13 +32,23 @@ class TestWorkerBee < Test::Unit::TestCase
     end
   end
   
-  def test_task_assigns_block_to_first_arg
-    expected = { :name => :coffee }
-    actual = @wb.task :coffee do
-      'i haz coffee'
+  def test_task_gets_run
+    WorkerBee.recipe do
+      task :clean do
+        'cleaned'
+      end
     end
     
-    assert_equal expected, actual
+    assert_equal 'cleaned', WorkerBee.run
   end
+  
+  # def test_task_assigns_name_to_first_arg
+  #   expected = { :name => :coffee }
+  #   actual = @wb.task :coffee do
+  #     'i haz coffee'
+  #   end
+  #   
+  #   assert_equal expected, actual
+  # end
   
 end
