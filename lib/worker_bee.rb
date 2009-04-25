@@ -6,7 +6,7 @@ class WorkerBee
   end
   
   def self.recipe &block
-    yield
+    block
   end
   
   def self.run
@@ -14,7 +14,7 @@ class WorkerBee
   end
   
   def task *tasks, &block
-    yield
+    block
   end
   
 end

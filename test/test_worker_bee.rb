@@ -6,22 +6,22 @@ class TestWorkerBee < Test::Unit::TestCase
      @wb = WorkerBee.new
   end
   
-  def test_recipe_takes_a_block
+  def test_recipe_stores_a_block
     expected = 'hello'
     actual = WorkerBee.recipe do
       'hello'
     end    
     
-    assert_equal expected, actual
+    assert_equal expected, actual.call
   end
   
-  def test_task_takes_a_block    
+  def test_task_stores_a_block    
     expected = 'hello'
     actual = @wb.task do
       'hello'
     end
     
-    assert_equal expected, actual
+    assert_equal expected, actual.call
   end
   
   def test_task_takes_many_arguments
@@ -30,6 +30,15 @@ class TestWorkerBee < Test::Unit::TestCase
         'hello'
       end
     end
+  end
+  
+  def test_task_assigns_block_to_first_arg
+    expected = { :name => :coffee }
+    actual = @wb.task :coffee do
+      'i haz coffee'
+    end
+    
+    assert_equal expected, actual
   end
   
 end
