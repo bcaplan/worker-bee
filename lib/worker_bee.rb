@@ -6,14 +6,16 @@ class WorkerBee
   end
   
   def self.recipe &block
+    raise(ArgumentError, "Block required") unless block_given?
     block
   end
   
-  def self.run
-    
+  def self.run symbol
+    "running #{symbol.to_s}"
   end
   
-  def task *tasks, &block
+  def task name, *deps, &block
+    raise(ArgumentError, "Block required") unless block_given?
     block
   end
   
