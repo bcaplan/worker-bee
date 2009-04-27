@@ -1,8 +1,10 @@
 class WorkerBee
   VERSION = '1.0.0'
   
+  attr_accessor :completed_tasks
+  
   def initialize
-    
+    @completed_tasks = Hash.new
   end
   
   def self.recipe &block

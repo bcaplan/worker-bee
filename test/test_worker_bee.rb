@@ -12,7 +12,7 @@ class TestWorkerBee < Test::Unit::TestCase
       'hello'
     end    
     
-    assert_equal expected, actual
+    assert_equal expected, actual.call
   end
   
   def test_recipe_raises_if_no_block
@@ -62,6 +62,10 @@ class TestWorkerBee < Test::Unit::TestCase
     assert_equal 'running clean\ncleaned', WorkerBee.run(:clean)
   end
   
+  def test_completed_tasks_returns_nil_if_task_not_done
+    assert_nil @wb.completed_tasks[:one]
+  end
+
   # def test_task_assigns_name_to_first_arg
   #   expected = { :name => :coffee }
   #   actual = @wb.task :coffee do
