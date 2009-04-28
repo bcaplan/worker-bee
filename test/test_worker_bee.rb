@@ -4,8 +4,8 @@ require "worker_bee"
 class TestWorkerBee < Test::Unit::TestCase
   def setup
      @wb = WorkerBee
-     # @output = StringIO.new
-     # $stdout = @output
+     @output = StringIO.new
+     $stdout = @output
   end
   
   def teardown

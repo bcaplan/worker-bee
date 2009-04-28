@@ -12,7 +12,6 @@ module WorkerBee
     end
     
     def run
-      puts "running #{@name.to_s}"
       @complete = true
       block.call
     end
@@ -38,15 +37,19 @@ module WorkerBee
     @tasks[name.to_sym] = Task.new(name.to_sym, block, *deps)
   end
   
-  def self.run task
+  def self.run task, level = 0
     task = task.to_sym
     if @tasks.key? task
+      puts "#{"  " * level}running #{task.to_s}"
       until @tasks[task].deps.empty?
         if @tasks[@tasks[task].deps.first].complete?
           met = @tasks[task].deps.shift
-          puts "not running #{met.to_s} - already met dependency"
+          level += 1
+          puts "#{"  " * level}not running #{met.to_s} - already met dependency"
         else
-          WorkerBee.run @tasks[task].deps.shift
+          level += 1
+          WorkerBee.run @tasks[task].deps.shift, level
+          level -= 1 unless level == 0
         end
       end
       @tasks[task].run
