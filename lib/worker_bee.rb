@@ -1,8 +1,7 @@
 module WorkerBee
   VERSION = '1.0.0'
   class Task
-    attr_reader   :name
-    attr_reader   :block
+    attr_reader   :name, :block
     attr_accessor :deps
     
     def initialize name, block, *deps
@@ -22,10 +21,10 @@ module WorkerBee
     end
   end
   
-  @@tasks = {}
+  @tasks = {}
   
   def self.tasks
-    @@tasks
+    @tasks
   end
 
   def self.recipe &block
@@ -35,10 +34,14 @@ module WorkerBee
   
   def self.task name, *deps, &block
     raise(ArgumentError, "Block required") unless block_given?
-    @@tasks[name.to_sym] = Task.new(name.to_sym, block, *deps)
+    @tasks[name.to_sym] = Task.new(name.to_sym, block, *deps)
   end
   
-  def self.run symbol
-    "running #{symbol.to_s}"
+  def self.run task
+    if @tasks.key? task.to_sym
+      @tasks[task.to_sym].run
+    else
+      raise(ArgumentError, "#{task.to_s} is not a valid task")
+    end
   end
 end

@@ -4,6 +4,12 @@ require "worker_bee"
 class TestWorkerBee < Test::Unit::TestCase
   def setup
      @wb = WorkerBee
+     @output = StringIO.new
+     $stdout = @output
+  end
+  
+  def teardown
+    $stdout = STDOUT
   end
   
   def test_recipe_evals_a_block
@@ -43,14 +49,7 @@ class TestWorkerBee < Test::Unit::TestCase
       @wb.task
     end
   end
-  
-  def test_run_takes_a_task
-    expected = "running a_task"
-    actual = @wb.run :a_task
     
-    assert_equal expected, actual
-  end
-  
   def test_task_adds_task_to_tasks
     @wb.task :clean do
       'cleaned'
@@ -59,15 +58,21 @@ class TestWorkerBee < Test::Unit::TestCase
     assert @wb.tasks.key? :clean
   end
   
-  # def test_task_gets_run
-  #   WorkerBee.recipe do
-  #     task :clean do
-  #       'cleaned'
-  #     end
-  #   end
-  #   
-  #   assert_equal 'running clean\ncleaned', WorkerBee.run(:clean)
-  # end
+  def test_task_gets_run
+    WorkerBee.recipe do
+      task :clean do
+        'cleaned'
+      end
+    end
+    
+    assert_equal 'cleaned', @wb.run(:clean)
+  end
+  
+  def test_task_must_be_valid
+    assert_raise(ArgumentError) do
+      @wb.run :foo
+    end
+  end
   
   ### Tests for Task class ###
   
@@ -85,5 +90,4 @@ class TestWorkerBee < Test::Unit::TestCase
     
     assert task.complete?
   end
-  
 end
