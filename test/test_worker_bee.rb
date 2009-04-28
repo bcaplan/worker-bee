@@ -6,13 +6,12 @@ class TestWorkerBee < Test::Unit::TestCase
      @wb = WorkerBee
   end
   
-  def test_recipe_stores_a_block
-    expected = 'hello'
+  def test_recipe_evals_a_block
     actual = @wb.recipe do
       'hello'
-    end    
+    end
     
-    assert_equal expected, actual.call
+    assert_equal 'hello', actual
   end
   
   def test_recipe_raises_if_no_block
@@ -21,13 +20,14 @@ class TestWorkerBee < Test::Unit::TestCase
     end
   end
   
-  def test_task_stores_a_block    
-    expected = 'hello'
-    actual = @wb.task :name do
-      'hello'
+  def test_recipe_scopes_block
+    assert_nothing_raised(NoMethodError) do
+      @wb.recipe do
+        task :clean do
+          'cleaned'
+        end
+      end
     end
-    
-    assert_equal expected, actual.call
   end
   
   def test_task_takes_many_arguments
@@ -42,21 +42,18 @@ class TestWorkerBee < Test::Unit::TestCase
     assert_raise(ArgumentError) do
       @wb.task
     end
-    
   end
   
   def test_run_takes_a_task
     expected = "running a_task"
-    actual = WorkerBee.run :a_task
+    actual = @wb.run :a_task
     
     assert_equal expected, actual
   end
   
-  def test_recipe_adds_task_to_tasks
-    WorkerBee.recipe do
-      task :clean do
-        'cleaned'
-      end
+  def test_task_adds_task_to_tasks
+    @wb.task :clean do
+      'cleaned'
     end
     
     assert @wb.tasks.key? :clean

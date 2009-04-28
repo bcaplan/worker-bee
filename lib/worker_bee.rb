@@ -30,12 +30,12 @@ module WorkerBee
 
   def self.recipe &block
     raise(ArgumentError, "Block required") unless block_given?
-    block
+    WorkerBee.module_eval(&block)
   end
   
   def self.task name, *deps, &block
     raise(ArgumentError, "Block required") unless block_given?
-    block
+    @@tasks[name.to_sym] = Task.new(name.to_sym, block, *deps)
   end
   
   def self.run symbol
