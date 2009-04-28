@@ -75,4 +75,12 @@ class TestWorkerBee < Test::Unit::TestCase
   #   assert_equal expected, actual
   # end
   
+  ### Tests for Task class ###
+  
+  def test_task_obj_runs_block
+    task = @wb::Task.new(Proc.new { 'hello' })
+    
+    assert_equal 'hello', task.call
+  end
+  
 end
