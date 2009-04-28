@@ -42,7 +42,12 @@ module WorkerBee
     task = task.to_sym
     if @tasks.key? task
       until @tasks[task].deps.empty?
-        WorkerBee.run @tasks[task].deps.shift
+        if @tasks[@tasks[task].deps.first].complete?
+          met = @tasks[task].deps.shift
+          puts "not running #{met.to_s} - already met dependency"
+        else
+          WorkerBee.run @tasks[task].deps.shift
+        end
       end
       @tasks[task].run
     else

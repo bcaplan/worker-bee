@@ -55,7 +55,7 @@ class TestWorkerBee < Test::Unit::TestCase
       'cleaned'
     end
     
-    assert @wb.tasks.key? :clean
+    assert @wb.tasks.key?(:clean)
   end
   
   def test_task_must_be_valid
@@ -81,12 +81,31 @@ class TestWorkerBee < Test::Unit::TestCase
       end
       
       task :done, :glean do
+        'done!' if WorkerBee.tasks[:glean].complete?
+      end
+    end
+    assert_equal 'done!', @wb.run(:done)
+  end
+  
+  def test_task_wont_run_twice
+    WorkerBee.module_eval("@glean_ran = 0")
+    @wb.recipe do
+      task :glean do
+        @glean_ran += 1
+      end
+      
+      task :middle, :glean do
+        'middle'
+      end
+      
+      task :done, :middle, :glean do
         'done!'
       end
     end
-    assert @wb.tasks[:glean].complete?
-    assert_equal 'done!', @wb.run(:done)
+    @wb.run(:done)
+    assert_equal 1, @wb.module_eval("@glean_ran")
   end
+  
   
   ### Tests for Task class ###
   
