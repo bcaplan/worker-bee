@@ -7,11 +7,12 @@ module WorkerBee
     def initialize name, block, *deps
       @name     = name
       @block    = block
-      @deps     = *deps
+      @deps     = deps
       @complete = false
     end
     
     def run
+      puts "running #{@name.to_s}"
       @complete = true
       block.call
     end
@@ -38,8 +39,12 @@ module WorkerBee
   end
   
   def self.run task
-    if @tasks.key? task.to_sym
-      @tasks[task.to_sym].run
+    task = task.to_sym
+    if @tasks.key? task
+      until @tasks[task].deps.empty?
+        WorkerBee.run @tasks[task].deps.shift
+      end
+      @tasks[task].run
     else
       raise(ArgumentError, "#{task.to_s} is not a valid task")
     end

@@ -4,8 +4,8 @@ require "worker_bee"
 class TestWorkerBee < Test::Unit::TestCase
   def setup
      @wb = WorkerBee
-     @output = StringIO.new
-     $stdout = @output
+     # @output = StringIO.new
+     # $stdout = @output
   end
   
   def teardown
@@ -58,8 +58,14 @@ class TestWorkerBee < Test::Unit::TestCase
     assert @wb.tasks.key? :clean
   end
   
+  def test_task_must_be_valid
+    assert_raise(ArgumentError) do
+      @wb.run :foo
+    end
+  end
+ 
   def test_task_gets_run
-    WorkerBee.recipe do
+    @wb.recipe do
       task :clean do
         'cleaned'
       end
@@ -68,10 +74,18 @@ class TestWorkerBee < Test::Unit::TestCase
     assert_equal 'cleaned', @wb.run(:clean)
   end
   
-  def test_task_must_be_valid
-    assert_raise(ArgumentError) do
-      @wb.run :foo
+  def test_task_wont_run_until_deps_met
+    @wb.recipe do
+      task :glean do
+        'gleaned'
+      end
+      
+      task :done, :glean do
+        'done!'
+      end
     end
+    assert @wb.tasks[:glean].complete?
+    assert_equal 'done!', @wb.run(:done)
   end
   
   ### Tests for Task class ###
