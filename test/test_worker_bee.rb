@@ -3,12 +3,12 @@ require "worker_bee"
 
 class TestWorkerBee < Test::Unit::TestCase
   def setup
-     @wb = WorkerBee.new
+     @wb = WorkerBee
   end
   
   def test_recipe_stores_a_block
     expected = 'hello'
-    actual = WorkerBee.recipe do
+    actual = @wb.recipe do
       'hello'
     end    
     
@@ -17,7 +17,7 @@ class TestWorkerBee < Test::Unit::TestCase
   
   def test_recipe_raises_if_no_block
     assert_raise(ArgumentError) do
-      WorkerBee.recipe
+      @wb.recipe
     end
   end
   
@@ -51,20 +51,20 @@ class TestWorkerBee < Test::Unit::TestCase
     
     assert_equal expected, actual
   end
-  
-  def test_task_gets_run
-    WorkerBee.recipe do
-      task :clean do
-        'cleaned'
-      end
-    end
     
-    assert_equal 'running clean\ncleaned', WorkerBee.run(:clean)
-  end
-  
   def test_completed_tasks_returns_nil_if_task_not_done
     assert_nil @wb.completed_tasks[:one]
   end
+
+  # def test_task_gets_run
+  #   WorkerBee.recipe do
+  #     task :clean do
+  #       'cleaned'
+  #     end
+  #   end
+  #   
+  #   assert_equal 'running clean\ncleaned', WorkerBee.run(:clean)
+  # end
 
   # def test_task_assigns_name_to_first_arg
   #   expected = { :name => :coffee }

@@ -1,13 +1,23 @@
-class WorkerBee
+module WorkerBee
   VERSION = '1.0.0'
   
-  attr_accessor :completed_tasks
+  @@tasks = {}
+  @@completed_tasks = {}
   
-  def initialize
-    @completed_tasks = Hash.new
+  def self.tasks
+    @@tasks
   end
   
+  def self.completed_tasks
+    @@completed_tasks
+  end
+
   def self.recipe &block
+    raise(ArgumentError, "Block required") unless block_given?
+    block
+  end
+  
+  def self.task name, *deps, &block
     raise(ArgumentError, "Block required") unless block_given?
     block
   end
@@ -16,9 +26,8 @@ class WorkerBee
     "running #{symbol.to_s}"
   end
   
-  def task name, *deps, &block
-    raise(ArgumentError, "Block required") unless block_given?
-    block
+  class Task
+    
   end
-  
+
 end
