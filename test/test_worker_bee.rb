@@ -51,11 +51,17 @@ class TestWorkerBee < Test::Unit::TestCase
     
     assert_equal expected, actual
   end
+  
+  def test_recipe_adds_task_to_tasks
+    WorkerBee.recipe do
+      task :clean do
+        'cleaned'
+      end
+    end
     
-  def test_completed_tasks_returns_nil_if_task_not_done
-    assert_nil @wb.completed_tasks[:one]
+    assert @wb.tasks.key? :clean
   end
-
+  
   # def test_task_gets_run
   #   WorkerBee.recipe do
   #     task :clean do
@@ -65,22 +71,22 @@ class TestWorkerBee < Test::Unit::TestCase
   #   
   #   assert_equal 'running clean\ncleaned', WorkerBee.run(:clean)
   # end
-
-  # def test_task_assigns_name_to_first_arg
-  #   expected = { :name => :coffee }
-  #   actual = @wb.task :coffee do
-  #     'i haz coffee'
-  #   end
-  #   
-  #   assert_equal expected, actual
-  # end
   
   ### Tests for Task class ###
   
   def test_task_obj_runs_block
-    task = @wb::Task.new(Proc.new { 'hello' })
+    task = @wb::Task.new(:hello, Proc.new { 'hello' })
     
-    assert_equal 'hello', task.call
+    assert_equal 'hello', task.run
+  end
+  
+  def test_task_completes_when_run
+    task = @wb::Task.new(:hello, Proc.new { 'hello' })
+    assert ! task.complete?
+    
+    task.run
+    
+    assert task.complete?
   end
   
 end

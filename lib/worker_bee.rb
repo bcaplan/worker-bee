@@ -1,23 +1,31 @@
 module WorkerBee
   VERSION = '1.0.0'
   class Task
+    attr_reader   :name
     attr_reader   :block
     attr_accessor :deps
     
-    def initialize block, *deps
-      
+    def initialize name, block, *deps
+      @name     = name
+      @block    = block
+      @deps     = *deps
+      @complete = false
+    end
+    
+    def run
+      @complete = true
+      block.call
+    end
+    
+    def complete?
+      @complete
     end
   end
   
   @@tasks = {}
-  @@completed_tasks = {}
   
   def self.tasks
     @@tasks
-  end
-  
-  def self.completed_tasks
-    @@completed_tasks
   end
 
   def self.recipe &block
@@ -33,5 +41,4 @@ module WorkerBee
   def self.run symbol
     "running #{symbol.to_s}"
   end
-  
 end
