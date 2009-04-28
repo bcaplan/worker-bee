@@ -45,6 +45,7 @@ module WorkerBee
         if @tasks[@tasks[task].deps.first].complete?
           level += 1
           puts "#{"  " * level}not running #{@tasks[task].deps.shift.to_s} - already met dependency"
+          level -= 1 unless level == 0
         else
           level += 1
           WorkerBee.run @tasks[task].deps.shift, level
