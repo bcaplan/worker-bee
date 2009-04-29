@@ -115,13 +115,13 @@ class TestWorkerBee < Test::Unit::TestCase
   ### Tests for Task class ###
   
   def test_task_obj_runs_block
-    task = @wb::Task.new(:hello, Proc.new { 'hello' })
+    task = @wb::Task.new(Proc.new { 'hello' })
     
     assert_equal 'hello', task.run
   end
   
   def test_task_completes_when_run
-    task = @wb::Task.new(:hello, Proc.new { 'hello' })
+    task = @wb::Task.new(Proc.new { 'hello' })
     assert ! task.complete?
     
     task.run
