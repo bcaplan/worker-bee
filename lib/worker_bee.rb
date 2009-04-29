@@ -40,11 +40,11 @@ module WorkerBee
     task = task.to_sym
     raise(ArgumentError, "#{task.to_s} is not a valid task") unless @tasks.key? task
     puts "#{"  " * (level += 1)}running #{task.to_s}"
-    until @tasks[task].deps.empty?
-      if @tasks[@tasks[task].deps.first].complete?
-        puts "#{"  " * (level + 1)}not running #{@tasks[task].deps.shift.to_s} - already met dependency"
+    @tasks[task].deps.each do |current_task|
+      if @tasks[current_task].complete?
+        puts "#{"  " * (level + 1)}not running #{current_task.to_s} - already met dependency"
       else
-        WorkerBee.run @tasks[task].deps.shift, level
+        WorkerBee.run current_task, level
       end
     end
     @tasks[task].run
