@@ -64,8 +64,12 @@ class TestWorkerBee < Test::Unit::TestCase
     end
   end
  
-  def test_task_gets_run
+  def test_run_runs_specified_task
     @wb.recipe do
+      task :shouldnt_run do
+        'I should not run'
+      end
+      
       task :clean do
         'cleaned'
       end
@@ -103,6 +107,7 @@ class TestWorkerBee < Test::Unit::TestCase
       end
     end
     @wb.run(:done)
+    
     assert_equal 1, @wb.module_eval("@glean_ran")
   end
   

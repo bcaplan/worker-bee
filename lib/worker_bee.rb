@@ -37,19 +37,15 @@ module WorkerBee
     @tasks[name.to_sym] = Task.new(name.to_sym, block, *deps)
   end
   
-  def self.run task, level = 0
+  def self.run task, level = -1
     task = task.to_sym
     if @tasks.key? task
-      puts "#{"  " * level}running #{task.to_s}"
+      puts "#{"  " * (level += 1)}running #{task.to_s}"
       until @tasks[task].deps.empty?
         if @tasks[@tasks[task].deps.first].complete?
-          level += 1
-          puts "#{"  " * level}not running #{@tasks[task].deps.shift.to_s} - already met dependency"
-          level -= 1 unless level == 0
+          puts "#{"  " * (level + 1)}not running #{@tasks[task].deps.shift.to_s} - already met dependency"
         else
-          level += 1
           WorkerBee.run @tasks[task].deps.shift, level
-          level -= 1 unless level == 0
         end
       end
       @tasks[task].run
