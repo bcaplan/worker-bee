@@ -1,8 +1,7 @@
 module WorkerBee
   VERSION = '1.0.0'
   class Task
-    attr_reader   :block
-    attr_accessor :deps
+    attr_reader   :block, :deps
     
     def initialize block, *deps
       @block    = block
@@ -11,8 +10,9 @@ module WorkerBee
     end
     
     def run
+      out = block.call
       @complete = true
-      block.call
+      out
     end
     
     def complete?

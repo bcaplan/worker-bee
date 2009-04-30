@@ -3,12 +3,13 @@ require "worker_bee"
 
 class TestWorkerBee < Test::Unit::TestCase
   def setup
-     @wb = WorkerBee
-     @output = StringIO.new
-     $stdout = @output
+    @wb = WorkerBee
+    @output = StringIO.new
+    $stdout = @output
   end
   
   def teardown
+    @output.read
     $stdout = STDOUT
   end
   
@@ -26,22 +27,22 @@ class TestWorkerBee < Test::Unit::TestCase
     end
   end
   
-  def test_recipe_scopes_block
-    assert_nothing_raised(NoMethodError) do
-      @wb.recipe do
-        task :clean do
-          'cleaned'
-        end
+  def test_recipe_scopes_block_and_adds_task
+    @wb.recipe do
+      task :clean do
+        'cleaned'
       end
     end
+    
+    assert WorkerBee.module_eval("@tasks.key? :clean")
   end
   
   def test_task_takes_many_arguments
-    assert_nothing_raised(ArgumentError) do
-      @wb.task :one, :two, :three, :four do
-        'hello'
-      end
+    @wb.task :one, :two, :three, :four do
+      'hello'
     end
+    
+    assert_equal 3, WorkerBee.module_eval("@tasks[:one].deps.size")
   end
   
   def test_task_raises_if_no_block
@@ -91,11 +92,31 @@ class TestWorkerBee < Test::Unit::TestCase
     assert_equal 'done!', @wb.run(:done)
   end
   
+  def test_deps_run_in_correct_order
+    check_order = []
+    @wb.recipe do
+      task :two, :three do
+        check_order << 'two'
+      end
+      
+      task :one, :two, :three do
+        check_order << 'one'
+      end
+      
+      task :three do
+        check_order << 'three'
+      end
+    end
+    
+    WorkerBee.run :one
+    assert_equal ['three', 'two', 'one'], check_order
+  end
+  
   def test_task_wont_run_twice
-    WorkerBee.module_eval("@glean_ran = 0")
+    glean_ran = 0
     @wb.recipe do
       task :glean do
-        @glean_ran += 1
+        glean_ran += 1
       end
       
       task :middle, :glean do
@@ -108,7 +129,7 @@ class TestWorkerBee < Test::Unit::TestCase
     end
     @wb.run(:done)
     
-    assert_equal 1, @wb.module_eval("@glean_ran")
+    assert_equal 1, glean_ran
   end
   
   
