@@ -8,11 +8,6 @@ class TestWorkerBee < Test::Unit::TestCase
     $stdout = @output
   end
   
-  def teardown
-    @output.read
-    $stdout = STDOUT
-  end
-  
   def test_recipe_evals_a_block
     actual = @wb.recipe do
       'hello'
