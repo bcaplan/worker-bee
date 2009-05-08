@@ -15,12 +15,6 @@ class TestWorkerBee < Test::Unit::TestCase
     assert_equal 'hello', actual
   end
 
-  def test_recipe_raises_if_no_block
-    assert_raise(ArgumentError) do
-      WorkerBee.recipe
-    end
-  end
-
   def test_recipe_scopes_block_and_adds_task
     WorkerBee.recipe do
       task :clean do
@@ -31,12 +25,12 @@ class TestWorkerBee < Test::Unit::TestCase
     assert WorkerBee.module_eval("@@tasks.key? :clean")
   end
 
-  def test_task_takes_many_arguments
+  def test_task_stores_deps
     WorkerBee.task :one, :two, :three, :four do
       'hello'
     end
 
-    assert_equal 3, WorkerBee.module_eval("@@tasks[:one].deps.size")
+    assert_equal [ :two, :three, :four ], WorkerBee.module_eval("@@tasks[:one].deps")
   end
 
   def test_task_raises_if_no_block

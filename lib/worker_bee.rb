@@ -41,20 +41,26 @@ module WorkerBee
   def self.run task, level = 0
     task = task.to_sym
     raise(ArgumentError, "#{task.to_s} is not a valid task") unless @@tasks.key? task
+    
     threads = []
+    
     puts "#{"  " * (level)}running #{task}"
-    @@tasks[task].deps.each do |current_task|
+    
+    current_task = @@tasks[task]
+    current_task.deps.each do |dependency|
       threads << Thread.new do
-        if @@tasks[current_task].complete?
-          puts "#{"  " * (level + 1)}not running #{current_task.to_s} - already met dependency"
-        else
-          WorkerBee.run current_task, level + 1
-        end
+        WorkerBee.run dependency, level + 1
       end
     end
+    
     threads.each do |thread|
       thread.join
     end
-    @@tasks[task].run
+    
+    if current_task.complete?
+      puts "#{"  " * (level + 1)}not running #{current_task.to_s} - already met dependency"
+    else
+      current_task.run
+    end
   end
 end
